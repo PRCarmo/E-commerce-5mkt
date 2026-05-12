@@ -1,4 +1,4 @@
-package com.ecommerce.model;
+package com.ecommerce.enums;
 
 public enum ProductStatus {
     ACTIVE, INACTIVE, OUT_OF_STOCK

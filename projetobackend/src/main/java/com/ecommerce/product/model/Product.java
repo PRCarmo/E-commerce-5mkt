@@ -1,6 +1,9 @@
-package com.ecommerce.model;
+package com.ecommerce.product.model;
 
+import com.ecommerce.enums.ProductStatus;
 import java.math.BigDecimal;
+
+import com.ecommerce.user.model.User;
 
 public class Product {
 

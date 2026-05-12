@@ -1,6 +1,8 @@
-package com.ecommerce.model;
+package com.ecommerce.order.model;
 
 import java.math.BigDecimal;
+
+import com.ecommerce.product.model.Product;
 
 public class OrderItem {
 

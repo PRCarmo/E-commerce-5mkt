@@ -1,9 +1,12 @@
-package com.ecommerce.model;
+package com.ecommerce.order.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ecommerce.enums.OrderStatus;
+import com.ecommerce.user.model.User;
 
 public class Order {
 

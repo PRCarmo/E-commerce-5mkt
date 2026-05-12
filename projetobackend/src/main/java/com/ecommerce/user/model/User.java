@@ -1,4 +1,6 @@
-package com.ecommerce.model;
+package com.ecommerce.user.model;
+
+import com.ecommerce.enums.UserRole;
 
 public class User {
 
