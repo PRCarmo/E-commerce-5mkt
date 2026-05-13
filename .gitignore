@@ -1,0 +1,36 @@
+# Maven
+target/
+# .mvn/ é rastreado intencionalmente (wrapper)
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# Spring Boot / Logs
+*.log
+logs/
+
+# Initializr lixo
+HELP.md
+
+# Secrets / ambiente local
+.env
+.env.local
+.env.*.local
+application-local.properties
+application-local.yml
+
+# Temporários
+*.bak
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db
