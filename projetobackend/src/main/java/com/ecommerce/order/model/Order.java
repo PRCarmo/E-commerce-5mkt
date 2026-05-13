@@ -6,15 +6,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ecommerce.enums.OrderStatus;
+import com.ecommerce.orderItem.model.OrderItem;
 import com.ecommerce.user.model.User;
 
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Table(name = "Order")
 public class Order {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "costumer")
     private User customer;
+
+    @Column(name = "items")
     private List<OrderItem> items;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private OrderStatus status;
+
+    @Column(name = "totalAmount")
     private BigDecimal totalAmount;
+    
+    @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
     public Order() {

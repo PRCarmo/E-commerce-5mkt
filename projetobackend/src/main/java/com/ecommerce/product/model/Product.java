@@ -5,14 +5,36 @@ import java.math.BigDecimal;
 
 import com.ecommerce.user.model.User;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 public class Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "price")
     private BigDecimal price;
+
+    @Column(name = "stock")
     private Integer stock;
+
+    @Column(name = "seller")
     private User seller;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private ProductStatus status;
 
     public Product() {}

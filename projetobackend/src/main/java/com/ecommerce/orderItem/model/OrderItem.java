@@ -1,14 +1,27 @@
-package com.ecommerce.order.model;
+package com.ecommerce.orderItem.model;
 
 import java.math.BigDecimal;
 
 import com.ecommerce.product.model.Product;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 public class OrderItem {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "product")
     private Product product;
+
+    @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "unitPrice")
     private BigDecimal unitPrice;
 
     public OrderItem() {}
