@@ -1,0 +1,68 @@
+TAREFAS WEB-BACKEND
+
+1. Adicionar controllers, services e repositories
+
+- Order (X)
+- OrderItem (X)
+- User (X)
+- Product (X)
+
+2. Autenticação e Autorização
+
+- Cadastro e Login (ENDPOINTS: auth/register, auth/login)
+- Geração e validação de token, filtração de requisições(JWT)
+- Implementação dos roles
+- Segurança por endpoint(@PreAuthorize)
+- Segurança por domínio (restringir acesso a produtos e pedidos de acordo com tipo de usuário)
+
+
+3. Regras de negócio
+
+- Alteração do estoque ao realizar um pedido
+- Restauração do estoque em caso de cancelamento
+- Recálculo e validação de lista ao finalizar pedidos.
+- Controle transacional em tudo isso (@Transactional)
+
+
+4. Refatorar modelos de domínio
+
+- PRODUCT: + categoria, imagem
+- ORDER: + endereçoDestino, formaPagamento, statusPagamento
+- USER: + telefone, endereco, etc.
+
+
+5. Auditoria
+
+- createdAt, updatedAt (Annotations úteis: @CreationTimestamp, @UpdateTimestamp)
+
+
+6. DTOs
+
+- CREATE (CreateOrderDTO, CreateProductDTO, CreateUserDTO) (X)
+- UPDATE (UpdateOrderDTO, UpdateProductDTO, UpdateUserDTO) (X)
+
+
+7. Tratamento global de erros
+Principais:
+
+- @RestGlobalAdvisor
+- EntityNotFoundException
+- BusinessException
+- UnauthorizedException
+- Adicionar outros
+
+
+8. RabbitMQ e processamento assíncrono
+
+9. Mapeamento do relacionamento das entidades
+
+- Fazer com base nas annotations que o professor mostrou em aula
+- e naquela atividade de modelagem
+
+10. Quaisquer alterações/refatorações necessárias no banco/Docker
+
+
+11. Adicionais
+
+- Uso de paginação (Pageable)
+- Filtros de queries (categoria, seller, preco) nos endpoints (Specification)
