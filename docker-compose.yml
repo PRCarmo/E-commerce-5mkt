@@ -18,23 +18,6 @@ services:
     networks:
       - mkt5_net
 
-  rabbitmq:
-    image: rabbitmq:3.13-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: mkt5
-      RABBITMQ_DEFAULT_PASS: mkt5
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-    networks:
-      - mkt5_net
-
 volumes:
   mkt5_pgdata:
 

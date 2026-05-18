@@ -22,10 +22,6 @@ public class Order {
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "seller_id", nullable = false)
-    private User seller;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private OrderStatus status;
