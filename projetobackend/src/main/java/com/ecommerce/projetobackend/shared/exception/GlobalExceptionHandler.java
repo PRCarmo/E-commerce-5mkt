@@ -12,6 +12,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import com.ecommerce.projetobackend.shared.exception.InvalidOrderException;
+import com.ecommerce.projetobackend.shared.exception.InsufficientStockException;
+import com.ecommerce.projetobackend.shared.exception.InvalidOrderStateException;
 
 import java.time.Instant;
 import java.util.List;
@@ -131,6 +134,42 @@ public class GlobalExceptionHandler {
                 .timestamp(java.time.Instant.now())
                 .status(HttpStatus.FORBIDDEN.value())
                 .error("Forbidden")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build());
+    }
+
+    @ExceptionHandler(InvalidOrderException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidOrder(
+            InvalidOrderException ex, HttpServletRequest request) {
+        return ResponseEntity.badRequest().body(ErrorResponseDTO.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build());
+    }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInsufficientStock(
+            InsufficientStockException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponseDTO.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error("Conflict")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build());
+    }
+
+    @ExceptionHandler(InvalidOrderStateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidOrderState(
+            InvalidOrderStateException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponseDTO.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error("Conflict")
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .build());
