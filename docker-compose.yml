@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: mkt5
+      POSTGRES_USER: mkt5
+      POSTGRES_PASSWORD: mkt5
+    volumes:
+      - mkt5_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mkt5 -d mkt5"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - mkt5_net
+
+volumes:
+  mkt5_pgdata:
+
+networks:
+  mkt5_net:
