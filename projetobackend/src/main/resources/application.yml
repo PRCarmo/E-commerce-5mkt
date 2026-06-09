@@ -18,6 +18,25 @@ app:
     secret: ${JWT_SECRET:dev-secret-trocar-em-prod-mkt5-2026-aaaaaaaaaaaa}
     expiration-ms: ${JWT_EXPIRATION:86400000}
     refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000}
+  rate-limit:
+    enabled: true
+    client-id-header: X-Forwarded-For
+    rules:
+      - name: auth-login
+        path-pattern: /api/v1/auth/login
+        methods: [POST]
+        limit: 5
+        window: 1m
+      - name: auth-register
+        path-pattern: /api/v1/auth/register
+        methods: [POST]
+        limit: 10
+        window: 1m
+      - name: auth-refresh
+        path-pattern: /api/v1/auth/refresh
+        methods: [POST]
+        limit: 20
+        window: 1m
 
 ---
 spring:
