@@ -17,6 +17,7 @@ app:
   jwt:
     secret: ${JWT_SECRET:dev-secret-trocar-em-prod-mkt5-2026-aaaaaaaaaaaa}
     expiration-ms: ${JWT_EXPIRATION:86400000}
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000}
 
 ---
 spring:
@@ -68,6 +69,7 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION}
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION}
 
 logging:
   level:
