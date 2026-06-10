@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.ecommerce.projetobackend.product.*;
-import com.ecommerce.projetobackend.auth.AuthService;
 import com.ecommerce.projetobackend.shared.exception.EntityNotFoundException;
 import com.ecommerce.projetobackend.shared.exception.ForbiddenException;
 import com.ecommerce.projetobackend.user.UserRole;
@@ -32,16 +31,10 @@ import static org.mockito.Mockito.when;
 public class ProductServiceTest {
     
     @Mock
-    private ProductService productService;
-
-    @Mock
     private ProductRepository productRepository;
 
-    @Mock
-    private ProductCreateRequest productCreateRequest;
-
     @InjectMocks
-    private AuthService authService;
+    private ProductService productService;
 
     @Test
     void mustListAll() {
@@ -104,12 +97,23 @@ public class ProductServiceTest {
         user.setPassword("12345678");
         user.setRole(UserRole.CUSTOMER);
 
+        User owner = new User();
+        owner.setId(99L);
+        owner.setRole(UserRole.SELLER);
+
+        Product product = new Product();
+        product.setId(10L);
+        product.setSeller(owner);
+
+        when(productRepository.findByIdWithSeller(10L))
+                .thenReturn(Optional.of(product));
+
         ProductUpdateRequest request = new ProductUpdateRequest();
 
-        assertThrows(ForbiddenException.class, 
-            () -> productService.update(null, request, user)
+        assertThrows(ForbiddenException.class,
+            () -> productService.update(10L, request, user)
         );
-        
+
     }
 
     @Test
@@ -120,8 +124,19 @@ public class ProductServiceTest {
         user.setPassword("12345678");
         user.setRole(UserRole.CUSTOMER);
 
+        User owner = new User();
+        owner.setId(99L);
+        owner.setRole(UserRole.SELLER);
+
+        Product product = new Product();
+        product.setId(10L);
+        product.setSeller(owner);
+
+        when(productRepository.findByIdWithSeller(10L))
+                .thenReturn(Optional.of(product));
+
         assertThrows(ForbiddenException.class,
-            () -> productService.delete(null, user)
+            () -> productService.delete(10L, user)
         );
     }
 
@@ -256,8 +271,10 @@ public class ProductServiceTest {
 
         Product product = new Product();
         product.setId(3L);
+        product.setSeller(seller);
 
-        when(productRepository.findByIdWithSeller(2L));
+        when(productRepository.findByIdWithSeller(3L))
+                .thenReturn(Optional.of(product));
 
         productService.delete(3L, admin);
 

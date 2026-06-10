@@ -2,6 +2,7 @@ package com.ecommerce.projetobackend.controllers;
 
 import com.ecommerce.projetobackend.auth.*;
 import com.ecommerce.projetobackend.config.SecurityConfig;
+import com.ecommerce.projetobackend.support.WebSecurityTestConfig;
 import com.ecommerce.projetobackend.user.UserRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -17,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, WebSecurityTestConfig.class})
 class AuthControllerTest {
 
     @Autowired
@@ -76,11 +78,11 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
-        .andExpect(status().isOk())
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.token")
                 .value("jwt-token"));
 
-        verifyNoInteractions(authService);
+        verify(authService).register(any(RegisterRequest.class));
     }
 
     @Test
@@ -136,7 +138,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
-        .andExpect(status().isCreated())
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.token")
                 .value("jwt-token"));
     }

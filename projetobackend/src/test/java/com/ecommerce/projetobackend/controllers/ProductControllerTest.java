@@ -2,6 +2,7 @@ package com.ecommerce.projetobackend.controllers;
 
 import com.ecommerce.projetobackend.auth.LoginRequest;
 import com.ecommerce.projetobackend.config.SecurityConfig;
+import com.ecommerce.projetobackend.support.WebSecurityTestConfig;
 import com.ecommerce.projetobackend.product.*;
 import com.ecommerce.projetobackend.security.UserDetailsImpl;
 import com.ecommerce.projetobackend.shared.exception.ForbiddenException;
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 @WebMvcTest(ProductController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, WebSecurityTestConfig.class})
 class ProductControllerTest {
 
     @Autowired
@@ -257,6 +258,11 @@ class ProductControllerTest {
     @Test
     void mustRejectCreateWhenNameIsBlank() throws Exception {
 
+        User seller = new User();
+        seller.setId(10L);
+        seller.setRole(UserRole.SELLER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(seller);
+
         ProductCreateRequest request = new ProductCreateRequest();
         request.setName("");
         request.setDescription("Description");
@@ -265,6 +271,7 @@ class ProductControllerTest {
 
         mockMvc.perform(
                 post("/api/v1/products")
+                        .with(user(userDetails))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
@@ -276,6 +283,11 @@ class ProductControllerTest {
     @Test
     void mustRejectCreateWhenPriceIsInvalid() throws Exception {
 
+        User seller = new User();
+        seller.setId(10L);
+        seller.setRole(UserRole.SELLER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(seller);
+
         ProductCreateRequest request = new ProductCreateRequest();
         request.setName("Notebook");
         request.setDescription("Description");
@@ -284,6 +296,7 @@ class ProductControllerTest {
 
         mockMvc.perform(
                 post("/api/v1/products")
+                        .with(user(userDetails))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
@@ -295,6 +308,11 @@ class ProductControllerTest {
     @Test
     void mustRejectCreateWhenStockIsNegative() throws Exception {
 
+        User seller = new User();
+        seller.setId(10L);
+        seller.setRole(UserRole.SELLER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(seller);
+
         ProductCreateRequest request = new ProductCreateRequest();
         request.setName("Notebook");
         request.setDescription("Description");
@@ -303,6 +321,7 @@ class ProductControllerTest {
 
         mockMvc.perform(
                 post("/api/v1/products")
+                        .with(user(userDetails))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
         )
@@ -333,12 +352,18 @@ class ProductControllerTest {
 
         User seller = new User();
         seller.setId(1L);
+        seller.setRole(UserRole.SELLER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(seller);
 
         ProductUpdateRequest request =
                 new ProductUpdateRequest();
+        request.setName("Notebook Updated");
+        request.setDescription("Updated");
+        request.setPrice(BigDecimal.valueOf(7000));
+        request.setStock(20);
+        request.setStatus(ProductStatus.ACTIVE);
 
         when(productService.update(
                 eq(1L),

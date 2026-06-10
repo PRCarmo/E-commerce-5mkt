@@ -4,18 +4,21 @@ import org.mockito.Mock;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import jakarta.persistence.EntityManager;
 
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
 
-import com.ecommerce.projetobackend.auth.AuthService;
 import com.ecommerce.projetobackend.user.User;
 import com.ecommerce.projetobackend.user.UserRole;
 import com.ecommerce.projetobackend.order.*;
@@ -25,6 +28,7 @@ import com.ecommerce.projetobackend.product.ProductStatus;
 import com.ecommerce.projetobackend.shared.exception.ForbiddenException;
 import com.ecommerce.projetobackend.shared.exception.InsufficientStockException;
 import com.ecommerce.projetobackend.shared.exception.InvalidOrderException;
+import com.ecommerce.projetobackend.shared.exception.InvalidOrderStateException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,10 +48,17 @@ public class OrderServiceTest {
     private ProductRepository productRepository;
 
     @Mock
-    private OrderService orderService;
+    private EntityManager entityManager;
 
     @InjectMocks
-    private AuthService authService;
+    private OrderService orderService;
+
+    @BeforeEach
+    void setUp() {
+        // EntityManager é injetado via @PersistenceContext (campo), que o
+        // @InjectMocks não preenche quando usa injeção por construtor.
+        ReflectionTestUtils.setField(orderService, "entityManager", entityManager);
+    }
 
     @Test
     void mustDenyOrderCreationForNonCustomer() {
@@ -101,7 +112,7 @@ public class OrderServiceTest {
         assertEquals(1, product.getStock());
 
         assertEquals(
-            "Product has 1 insufficient stock", 
+            "Product 1 has insufficient stock",
             exception.getMessage()
         );
 
@@ -129,13 +140,16 @@ public class OrderServiceTest {
         OrderCreateRequest request = new OrderCreateRequest();
         request.setItems(List.of(itemRequest));
 
+        when(productRepository.findByIdWithSeller(2L))
+                .thenReturn(Optional.of(product));
+
         InvalidOrderException exception =
         assertThrows(
             InvalidOrderException.class,
             () -> orderService.create(request, user)
         );
 
-        assertEquals("This product 2 is not active",
+        assertEquals("Product 2 is not active",
             exception.getMessage()
         );
     }
@@ -166,7 +180,7 @@ public class OrderServiceTest {
             .totalAmount(BigDecimal.valueOf(200))
             .build();
 
-        when(productRepository.findById(2L))
+        when(productRepository.findByIdWithSeller(1L))
             .thenReturn(Optional.of(product));
 
         when(orderRepository.save(any(Order.class)))
@@ -252,7 +266,7 @@ public class OrderServiceTest {
         order.setStatus(OrderStatus.PENDING);
         order.setItems(new ArrayList<>());
 
-        when(orderRepository.findById(2L))
+        when(orderRepository.findByIdWithDetails(2L))
             .thenReturn(Optional.of(order))
             .thenReturn(Optional.of(order));
 
@@ -285,7 +299,7 @@ public class OrderServiceTest {
             .thenReturn(Optional.of(order));
 
         assertThrows(
-            InvalidOrderException.class,
+            InvalidOrderStateException.class,
             () -> orderService.cancel(2L, user)
         );
     }
@@ -361,7 +375,7 @@ public class OrderServiceTest {
         assertThrows(
             ForbiddenException.class,
             () -> orderService.cancel(
-                2L, 
+                3L,
                 authenticatedUser
             )
         );

@@ -7,6 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import com.ecommerce.projetobackend.user.User;
 import com.ecommerce.projetobackend.auth.AuthResponse;
 import com.ecommerce.projetobackend.auth.AuthService;
+import com.ecommerce.projetobackend.auth.RefreshTokenService;
 import com.ecommerce.projetobackend.auth.RegisterRequest;
 import com.ecommerce.projetobackend.security.JwtService;
 import com.ecommerce.projetobackend.shared.exception.EmailAlreadyExistsException;
@@ -39,6 +41,12 @@ public class AuthServiceTest {
 
     @Mock
     private JwtService jwtService;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @Mock
+    private RefreshTokenService refreshTokenService;
 
     @InjectMocks
     private AuthService authService;

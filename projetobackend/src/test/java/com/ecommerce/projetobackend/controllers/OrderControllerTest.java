@@ -3,6 +3,7 @@ package com.ecommerce.projetobackend.controllers;
 import com.ecommerce.projetobackend.order.*;
 import com.ecommerce.projetobackend.product.Product;
 import com.ecommerce.projetobackend.config.SecurityConfig;
+import com.ecommerce.projetobackend.support.WebSecurityTestConfig;
 import com.ecommerce.projetobackend.shared.exception.EntityNotFoundException;
 import com.ecommerce.projetobackend.shared.exception.ForbiddenException;
 import com.ecommerce.projetobackend.shared.exception.InsufficientStockException;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(OrderController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, WebSecurityTestConfig.class})
 public class OrderControllerTest {
     
     @Autowired
@@ -110,6 +111,7 @@ public class OrderControllerTest {
         User customer = new User();
         customer.setId(1L);
         customer.setName("Pedro");
+        customer.setRole(UserRole.CUSTOMER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(customer);
@@ -145,6 +147,7 @@ public class OrderControllerTest {
         User customer = new User();
         customer.setId(1L);
         customer.setName("Test");
+        customer.setRole(UserRole.CUSTOMER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(customer);
@@ -176,6 +179,7 @@ public class OrderControllerTest {
 
         User customer = new User();
         customer.setId(1L);
+        customer.setRole(UserRole.CUSTOMER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(customer);
@@ -202,11 +206,17 @@ public class OrderControllerTest {
     @Test
     void mustRejectOrderWhenItemsIsEmpty() throws Exception {
 
+        User customer = new User();
+        customer.setId(1L);
+        customer.setRole(UserRole.CUSTOMER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(customer);
+
         OrderCreateRequest request =
                 new OrderCreateRequest(List.of());
 
         mockMvc.perform(
                 post("/api/v1/orders")
+                        .with(user(userDetails))
                         .contentType(
                                 org.springframework.http.MediaType.APPLICATION_JSON)
                         .content(
@@ -221,6 +231,11 @@ public class OrderControllerTest {
     @Test
     void mustRejectOrderWhenProductIdIsNull() throws Exception {
 
+        User customer = new User();
+        customer.setId(1L);
+        customer.setRole(UserRole.CUSTOMER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(customer);
+
         OrderItemRequest item =
                 new OrderItemRequest(null, 2);
 
@@ -229,6 +244,7 @@ public class OrderControllerTest {
 
         mockMvc.perform(
                 post("/api/v1/orders")
+                        .with(user(userDetails))
                         .contentType(
                                 org.springframework.http.MediaType.APPLICATION_JSON)
                         .content(
@@ -243,6 +259,11 @@ public class OrderControllerTest {
     @Test
     void mustRejectOrderWhenQuantityIsInvalid() throws Exception {
 
+        User customer = new User();
+        customer.setId(1L);
+        customer.setRole(UserRole.CUSTOMER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(customer);
+
         OrderItemRequest item =
                 new OrderItemRequest(10L, 0);
 
@@ -251,6 +272,7 @@ public class OrderControllerTest {
 
         mockMvc.perform(
                 post("/api/v1/orders")
+                        .with(user(userDetails))
                         .contentType(
                                 org.springframework.http.MediaType.APPLICATION_JSON)
                         .content(
@@ -267,6 +289,7 @@ public class OrderControllerTest {
 
         User customer = new User();
         customer.setId(1L);
+        customer.setRole(UserRole.CUSTOMER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(customer);
@@ -294,6 +317,7 @@ public class OrderControllerTest {
 
         User customer = new User();
         customer.setId(1L);
+        customer.setRole(UserRole.CUSTOMER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(customer);
@@ -320,6 +344,7 @@ public class OrderControllerTest {
 
         User customer = new User();
         customer.setId(1L);
+        customer.setRole(UserRole.CUSTOMER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(customer);

@@ -4,8 +4,10 @@ import org.mockito.Mock;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +19,6 @@ import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import java.util.Collections;
 
-import com.ecommerce.projetobackend.auth.AuthService;
 import com.ecommerce.projetobackend.shared.exception.EmailAlreadyExistsException;
 import com.ecommerce.projetobackend.shared.exception.EntityNotFoundException;
 import com.ecommerce.projetobackend.shared.exception.ForbiddenException;
@@ -36,22 +37,26 @@ import static org.mockito.Mockito.when;
 public class UserServiceTest {
     
     @Mock
-    private UserService userService;
-
-    @Mock
     private UserRepository userRepository;
 
     @Mock
     private EntityManager entityManager;
 
     @InjectMocks
-    private AuthService authService;
+    private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        // O EntityManager é injetado via @PersistenceContext (campo), que o
+        // @InjectMocks não preenche quando usa injeção por construtor.
+        ReflectionTestUtils.setField(userService, "entityManager", entityManager);
+    }
 
     @Test
     void mustRejectUpdateWhenEmailAlreadyExists() {
 
         User authenticatedUser = new User();
-        authenticatedUser.setId(1L);
+        authenticatedUser.setId(2L);
 
         User existingUser = new User();
         existingUser.setId(2L);
@@ -75,15 +80,15 @@ public class UserServiceTest {
             );
 
         assertEquals(
-            "This email already exists", 
+            "Email already registered: new@email.com",
             exception.getMessage()
         );
-        
+
         verify(userRepository)
             .findById(2L);
 
         verify(userRepository)
-            .findByEmail("new@email.com");
+            .existsByEmail("new@email.com");
 
         verify(userRepository, never())
             .save(any(User.class));
@@ -93,7 +98,7 @@ public class UserServiceTest {
     void mustUpdateOwnProfileSuccessfully() {
 
         User authenticatedUser = new User();
-        authenticatedUser.setId(1L);
+        authenticatedUser.setId(2L);
 
         User user = new User();
         user.setId(2L);
@@ -119,7 +124,7 @@ public class UserServiceTest {
         assertNotNull(result);
 
         assertEquals(
-                "newTest",
+                "NewTest",
                 result.getName()
         );
 

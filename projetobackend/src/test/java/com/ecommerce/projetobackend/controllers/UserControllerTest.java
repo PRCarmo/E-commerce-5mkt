@@ -2,6 +2,7 @@ package com.ecommerce.projetobackend.controllers;
 
 import com.ecommerce.projetobackend.user.*;
 import com.ecommerce.projetobackend.config.SecurityConfig;
+import com.ecommerce.projetobackend.support.WebSecurityTestConfig;
 import com.ecommerce.projetobackend.shared.exception.EntityNotFoundException;
 import com.ecommerce.projetobackend.shared.exception.ForbiddenException;
 import com.ecommerce.projetobackend.security.UserDetailsImpl;
@@ -29,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, WebSecurityTestConfig.class})
 public class UserControllerTest {
     
     @Autowired
@@ -185,6 +186,11 @@ public class UserControllerTest {
     @Test
     void mustRejectUpdateWhenNameIsBlank() throws Exception {
 
+        User authenticatedUser = new User();
+        authenticatedUser.setId(1L);
+        authenticatedUser.setRole(UserRole.CUSTOMER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(authenticatedUser);
+
         UserUpdateMeRequest request =
                 new UserUpdateMeRequest();
 
@@ -193,6 +199,7 @@ public class UserControllerTest {
 
         mockMvc.perform(
                 put("/api/v1/users/me")
+                        .with(user(userDetails))
                         .contentType(
                                 org.springframework.http.MediaType.APPLICATION_JSON)
                         .content(
@@ -207,6 +214,11 @@ public class UserControllerTest {
     @Test
     void mustRejectUpdateWhenEmailIsInvalid() throws Exception {
 
+        User authenticatedUser = new User();
+        authenticatedUser.setId(1L);
+        authenticatedUser.setRole(UserRole.CUSTOMER);
+        UserDetailsImpl userDetails = new UserDetailsImpl(authenticatedUser);
+
         UserUpdateMeRequest request =
                 new UserUpdateMeRequest();
 
@@ -215,6 +227,7 @@ public class UserControllerTest {
 
         mockMvc.perform(
                 put("/api/v1/users/me")
+                        .with(user(userDetails))
                         .contentType(
                                 org.springframework.http.MediaType.APPLICATION_JSON)
                         .content(
@@ -231,6 +244,7 @@ public class UserControllerTest {
 
         User user = new User();
         user.setId(1L);
+        user.setRole(UserRole.CUSTOMER);
 
         UserDetailsImpl userDetails =
                 new UserDetailsImpl(user);
