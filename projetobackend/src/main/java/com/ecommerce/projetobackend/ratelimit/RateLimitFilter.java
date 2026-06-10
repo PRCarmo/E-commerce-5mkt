@@ -1,7 +1,7 @@
 package com.ecommerce.projetobackend.ratelimit;
 
 import com.ecommerce.projetobackend.shared.exception.ErrorResponseDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
