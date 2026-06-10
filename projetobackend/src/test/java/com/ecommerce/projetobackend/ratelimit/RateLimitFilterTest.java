@@ -1,6 +1,6 @@
 package com.ecommerce.projetobackend.ratelimit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -28,7 +28,7 @@ class RateLimitFilterTest {
     private final RateLimitFilter filter = new RateLimitFilter(
             properties,
             rateLimiter,
-            new ObjectMapper().findAndRegisterModules()
+            new ObjectMapper()
     );
 
     @Test
