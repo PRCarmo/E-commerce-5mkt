@@ -334,7 +334,7 @@ Itens reconhecidos como fora de escopo desta entrega:
 - **Sem testes automatizados** — apenas o smoke test default do Spring Boot (`contextLoads`). Validação foi feita manualmente via curl em cada fase.
 - **Sem `@PreAuthorize`** — segurança por domínio fica nos services. Trade-off explicado em [Decisões de arquitetura](#decisões-de-arquitetura).
 - **Sem refresh token** — JWT expira e o cliente precisa logar de novo. Fora de escopo.
-- **Sem rate limiting** — qualquer cliente pode tentar login indefinidamente.
+- **Rate limiting simples** — endpoints de auth usam limites configuráveis em memória por cliente, com caminho para evoluir para Redis/Bucket4j.
 
 ## Autores
 

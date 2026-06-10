@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -20,17 +21,21 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthService(UserService userService,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
-                       JwtService jwtService) {
+                       JwtService jwtService,
+                       RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (request.getRole() == UserRole.ADMIN) {
             throw new IllegalArgumentException("Cannot register as ADMIN");
@@ -53,11 +58,7 @@ public class AuthService {
         User saved = userService.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalStateException("User not found after save: " + request.getEmail()));
 
-        String token = jwtService.generateToken(saved);
-        return AuthResponse.builder()
-                .token(token)
-                .user(UserResponse.from(saved))
-                .build();
+        return buildAuthResponse(saved);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -67,10 +68,24 @@ public class AuthService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userDetails.getUser();
-        String token = jwtService.generateToken(user);
+        return buildAuthResponse(user);
+    }
+
+    public AuthResponse refresh(RefreshTokenRequest request) {
+        RefreshTokenService.RefreshTokenRotation rotation = refreshTokenService.rotate(request.getRefreshToken());
+        User user = rotation.user();
 
         return AuthResponse.builder()
-                .token(token)
+                .token(jwtService.generateToken(user))
+                .refreshToken(rotation.refreshToken())
+                .user(UserResponse.from(user))
+                .build();
+    }
+
+    private AuthResponse buildAuthResponse(User user) {
+        return AuthResponse.builder()
+                .token(jwtService.generateToken(user))
+                .refreshToken(refreshTokenService.createToken(user))
                 .user(UserResponse.from(user))
                 .build();
     }

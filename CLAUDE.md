@@ -88,7 +88,7 @@ API REST de marketplace acadêmica. Cadastro de usuários (CUSTOMER/SELLER/ADMIN
 - **Cart dormindo** — tabelas mapeadas, sem service/controller. Ativar criando service+controller, sem migration nova.
 - **Sem testes automatizados** — só o smoke `contextLoads` do Spring Boot.
 - **Sem refresh token** — JWT expira, cliente loga de novo.
-- **Sem rate limiting** — sem proteção contra brute force no login.
+- **Rate limiting simples** — endpoints de auth usam limites configuráveis em memória por cliente, com caminho para evoluir para Redis/Bucket4j.
 
 ## Como o Claude Code deve trabalhar
 
